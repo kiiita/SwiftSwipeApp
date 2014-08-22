@@ -11,12 +11,16 @@ import UIKit
 class PileView : UIView {
     
     var popCardViewWithFrame : ((CGRect) -> UIView?)?
-    var swipeViews : SwipeView[] = []
+    var swipeViews : [SwipeView] = []
     
     let transformRatio : CGFloat = 0.96
     
-    init(frame: CGRect)  {
+    override init(frame: CGRect)  {
         super.init(frame: frame)
+    }
+    
+    required init(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
     }
     
     func reloadContent() {
@@ -24,7 +28,7 @@ class PileView : UIView {
             return
         }
         
-        for position in self.swipeViews.count..4 {
+        for position in self.swipeViews.count...4 {
             let frame = CGRectMake(0, 0, self.frame.width, self.frame.height)
             
             if let view = self.popCardViewWithFrame?(frame) {
@@ -61,7 +65,7 @@ class PileView : UIView {
     
     func animateCardInsertion(swipeView : SwipeView, atPosition position : CGFloat) {
         let prevCount : CGFloat = 0
-        let transform = self.transformForPosition(Float(position))
+        let transform = self.transformForPosition(CGFloat(position))
         let frame = swipeView.frame
         
         let verticalOffset : CGFloat = -50
@@ -89,8 +93,8 @@ class PileView : UIView {
         if (self.swipeViews.count > 0) { //Keep transform at identity if first view
             let count = self.swipeViews.count
             
-            let scale = powf(transformRatio, position)
-            transform = CGAffineTransformMakeScale(scale, scale)
+            //let scale = powf(transformRatio, position)
+            //transform = CGAffineTransformMakeScale(scale, scale)
             
             transform = CGAffineTransformTranslate(transform, 0, -15 * position)
         }
@@ -101,7 +105,7 @@ class PileView : UIView {
     func optionsForView(view : UIView) -> SwipeOptions {
         var options = SwipeOptions()
         options.onPan = {(panState : PanState) -> () in
-            for i in 1..self.swipeViews.count {
+            for i in 1...self.swipeViews.count {
                 let swipeView = self.swipeViews[i]
                 let ratio = panState.thresholdRatio
                 let position = CGFloat(i) - ratio
